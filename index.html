@@ -195,7 +195,7 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      /* Removed extra margin to ensure centering */
+      /* Removed extra margin to ensure proper centering */
       transform: translate(-50%, -50%) scale(0.01);
       width: 200px;
       height: 200px;
@@ -219,8 +219,16 @@
       p {
         font-size: 1rem;
       }
+      /* Adjust the time boxes so the text fits inside */
       .time-box {
-        width: 60px;
+        width: 70px;
+        padding: 8px;
+      }
+      .time-value {
+        font-size: 1.2rem;
+      }
+      .time-label {
+        font-size: 0.8rem;
       }
       .face-content .line {
         font-size: 1.5rem;
