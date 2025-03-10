@@ -601,9 +601,191 @@
         letter-spacing: 1px;
       }
     }
+
+    /* Add this inside your existing <style> tag */
+
+/* Intro Screen */
+.intro-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: opacity 1.5s ease-out;
+}
+
+.planet-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.5s ease-out;
+}
+
+.planet-container:hover {
+  transform: scale(1.05);
+}
+
+.planet-container:hover .start-text {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.planet {
+  width: 150px;
+  height: 150px;
+  background: linear-gradient(30deg, var(--dark-gold), var(--primary-glow), var(--secondary-glow));
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 30px var(--primary-glow);
+  transform: rotate(-15deg);
+  animation: float 6s ease-in-out infinite;
+}
+
+.planet-surface {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: url('https://www.transparentpng.com/thumb/moon/small-moon-png-clipart-6.png');
+  background-size: cover;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  animation: rotate 30s linear infinite;
+}
+
+.planet-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(75deg);
+  width: 230px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, transparent, var(--primary-glow), transparent);
+  opacity: 0.7;
+  box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.planet-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset -30px -30px 60px rgba(0,0,0,0.5);
+}
+
+.planet-shadow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 40px;
+  background: rgba(0,0,0,0.5);
+  filter: blur(15px);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.orbit-path {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 220px;
+  height: 220px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  border-radius: 50%;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.satellite {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #fff, 0 0 20px var(--primary-glow);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: orbit 10s linear infinite;
+}
+
+.start-text {
+  position: absolute;
+  bottom: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 1.5em;
+  opacity: 0.9;
+}
+
+.planet-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--primary-glow);
+  opacity: 0;
+}
+
+@keyframes pulse-intro {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+@keyframes orbit {
+  from { transform: translateX(-50%) rotate(0deg) translateY(-110px) rotate(0deg); }
+  to { transform: translateX(-50%) rotate(360deg) translateY(-110px) rotate(-360deg); }
+}
+
+/* Content initially hidden */
+.content-wrapper {
+  opacity: 0;
+  transition: opacity 1.5s ease-in;
+}
+
+/* Show content when active */
+.content-wrapper.active {
+  opacity: 1;
+}
   </style>
 </head>
 <body>
+    <div id="introScreen" class="intro-screen">
+      <div class="planet-container">
+        <div class="planet">
+          <div class="planet-surface"></div>
+          <div class="planet-ring"></div>
+          <div class="planet-glow"></div>
+        </div>
+        <div class="planet-shadow"></div>
+        <div class="orbit-path">
+          <div class="satellite"></div>
+        </div>
+        <div class="start-text neon">Click to Launch</div>
+        <div class="planet-pulse"></div>
+      </div>
+    </div>
   <div id="stars"></div>
   
   <!-- Parallax background elements -->
@@ -1275,40 +1457,221 @@ document.addEventListener('keydown', initAudio);
   });
 
 // Initialize everything on load
+// Initialize the sound system and intro screen
 window.onload = function() {
-  // claptac #4 - random comment
   console.log("CLAPTAC");
   createStars();
-  createCursorTrail();
-  createShootingStars(); // Add this line
-  revealText();
   
-  // Add hover sounds to interactive elements
-  document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
-    item.addEventListener('mouseenter', () => playSound('hover'));
+  // Create shooting stars for the intro screen (fewer stars initially)
+  createIntroShootingStars();
+  
+  // Setup intro screen animation
+  const introScreen = document.getElementById('introScreen');
+  const planetContainer = document.querySelector('.planet-container');
+  const contentWrapper = document.querySelector('.content-wrapper');
+  
+  // Add pulse animation to the planet
+  setInterval(() => {
+    const pulse = document.querySelector('.planet-pulse');
+    pulse.style.animation = 'none';
+    pulse.offsetHeight; // Force reflow
+    pulse.style.animation = 'pulse-intro 2s ease-out forwards';
+  }, 2000);
+
+  // Start the site when the planet is clicked
+  planetContainer.addEventListener('click', () => {
+    // Play a special launch sound
+    playLaunchSound();
+    
+    // Initialize audio system
+    initAudio();
+    
+    // Animate the planet on click
+    planetContainer.style.transform = 'scale(1.5)';
+    planetContainer.style.opacity = '0';
+    
+    // Fade out intro screen
+    setTimeout(() => {
+      introScreen.style.opacity = '0';
+      contentWrapper.classList.add('active');
+      
+      setTimeout(() => {
+        introScreen.style.display = 'none';
+        
+        // Initialize the main site elements
+        createCursorTrail();
+        createShootingStars();
+        revealText();
+        
+        // Add hover sounds to interactive elements
+        document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
+          item.addEventListener('mouseenter', () => playSound('hover'));
+        });
+      }, 1500);
+    }, 800);
   });
   
-  // Show a message about enabling sound
-  const soundMessage = document.createElement('div');
-  soundMessage.style.position = 'fixed';
-  soundMessage.style.bottom = '20px';
-  soundMessage.style.right = '20px';
-  soundMessage.style.background = 'rgba(0, 0, 0, 0.7)';
-  soundMessage.style.color = 'var(--primary-glow)';
-  soundMessage.style.padding = '10px 15px';
-  soundMessage.style.borderRadius = '8px';
-  soundMessage.style.fontSize = '0.9em';
-  soundMessage.style.zIndex = '100';
-  soundMessage.style.transition = 'opacity 1s';
-  soundMessage.innerHTML = 'Click anywhere for sound effects';
-  document.body.appendChild(soundMessage);
-  
-  setTimeout(() => {
-    soundMessage.style.opacity = '0';
-    setTimeout(() => {
-      document.body.removeChild(soundMessage);
-    }, 1000);
-  }, 5000);
+  // Create minimal shooting stars for intro screen
+  function createIntroShootingStars() {
+    const shootingStarsContainer = document.createElement('div');
+    shootingStarsContainer.id = 'introShootingStars';
+    shootingStarsContainer.style.position = 'fixed';
+    shootingStarsContainer.style.top = '0';
+    shootingStarsContainer.style.left = '0';
+    shootingStarsContainer.style.width = '100vw';
+    shootingStarsContainer.style.height = '100vh';
+    shootingStarsContainer.style.pointerEvents = 'none';
+    shootingStarsContainer.style.zIndex = '9999';
+    document.body.appendChild(shootingStarsContainer);
+    
+    // Create occasional shooting star
+    function createStar() {
+      const star = document.createElement('div');
+      const trail = document.createElement('div');
+      
+      // Random position from top-left
+      const startX = Math.random() * 40;
+      const startY = Math.random() * 40;
+      
+      const length = 100 + Math.random() * 100;
+      const angle = 30 + Math.random() * 30;
+      const duration = 0.7 + Math.random() * 0.5;
+      
+      // Calculate end position
+      const radians = angle * Math.PI / 180;
+      const endX = startX + length * Math.cos(radians);
+      const endY = startY + length * Math.sin(radians);
+      
+      // Style the star
+      star.style.position = 'absolute';
+      star.style.top = `${startY}vh`;
+      star.style.left = `${startX}vw`;
+      star.style.width = '0px';
+      star.style.height = '0px';
+      star.style.borderRadius = '50%';
+      star.style.background = '#fff';
+      star.style.boxShadow = '0 0 10px #fff, 0 0 20px var(--primary-glow)';
+      star.style.zIndex = '1';
+      star.style.opacity = '0';
+      star.style.transition = `all ${duration}s linear`;
+      
+      // Style the trail
+      trail.style.position = 'absolute';
+      trail.style.top = `${startY}vh`;
+      trail.style.left = `${startX}vw`;
+      trail.style.width = '0';
+      trail.style.height = '2px';
+      trail.style.transformOrigin = 'left center';
+      trail.style.transform = `rotate(${angle}deg)`;
+      trail.style.background = 'linear-gradient(90deg, transparent, #fff)';
+      trail.style.opacity = '0';
+      trail.style.zIndex = '0';
+      trail.style.transition = `all ${duration * 0.8}s linear, opacity ${duration * 0.2}s linear`;
+      
+      // Add elements to container
+      shootingStarsContainer.appendChild(trail);
+      shootingStarsContainer.appendChild(star);
+      
+      // Force reflow
+      star.offsetHeight;
+      
+      // Animate the shooting star
+      star.style.transition = `all ${duration}s linear`;
+      star.style.transform = `translate(${endX - startX}vw, ${endY - startY}vh)`;
+      star.style.width = '2px';
+      star.style.height = '2px';
+      star.style.opacity = '1';
+      
+      // Animate the trail
+      setTimeout(() => {
+        trail.style.width = '100px';
+        trail.style.opacity = '0.5';
+      }, 10);
+      
+      // Remove elements after animation
+      setTimeout(() => {
+        star.style.opacity = '0';
+        trail.style.opacity = '0';
+        setTimeout(() => {
+          if (shootingStarsContainer.contains(star)) {
+            shootingStarsContainer.removeChild(star);
+            shootingStarsContainer.removeChild(trail);
+          }
+        }, duration * 300);
+      }, duration * 1000);
+    }
+    
+    // Create occasional shooting stars
+    function scheduleNext() {
+      const delay = 3000 + Math.random() * 3000;
+      setTimeout(() => {
+        createStar();
+        scheduleNext();
+      }, delay);
+    }
+    
+    // Start with initial star and schedule more
+    setTimeout(createStar, 1000);
+    scheduleNext();
+  }
+
+  // Special launch sound effect
+  function playLaunchSound() {
+    if (!window.AudioContext) {
+      return; // Early return if audio API not supported
+    }
+    
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Create a richer, more dramatic launch sound
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const osc3 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    
+    // Configure oscillators
+    osc1.type = 'sine';
+    osc2.type = 'sawtooth';
+    osc3.type = 'triangle';
+    
+    // Start with low frequencies
+    osc1.frequency.setValueAtTime(150, ctx.currentTime);
+    osc2.frequency.setValueAtTime(40, ctx.currentTime);
+    osc3.frequency.setValueAtTime(220, ctx.currentTime);
+    
+    // Rising pitch effect
+    osc1.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 1.5);
+    osc2.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 1.2);
+    osc3.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 1.0);
+    
+    // Configure filter
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(300, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + 1.0);
+    filter.Q.value = 5;
+    
+    // Set volume envelope
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
+    gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+    
+    // Connect everything
+    osc1.connect(filter);
+    osc2.connect(filter);
+    osc3.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    
+    // Start and stop
+    osc1.start();
+    osc2.start();
+    osc3.start();
+    osc1.stop(ctx.currentTime + 2.0);
+    osc2.stop(ctx.currentTime + 2.0);
+    osc3.stop(ctx.currentTime + 2.0);
+  }
 };
   </script>
 </body>
