@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>We Are Hiring - Galactic Crew</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added for responsiveness -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
@@ -24,13 +24,19 @@
       --hologram-blue: rgba(0, 255, 255, 0.2); /* Hologram effect color */
     }
     
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
       overflow-x: hidden;
+    }
+    
+    body {
       background: #000; /* Pure black space background */
       color: var(--text-color);
-      height: 200vh; /* for parallax scrolling */
+      min-height: 100vh; 
       font-family: 'Rajdhani', sans-serif;
       perspective: 1000px;
+      position: relative;
     }
 
     /* Enhanced Starfield background */
@@ -38,10 +44,11 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       z-index: 0;
       pointer-events: none;
+      overflow: hidden;
     }
     
     .star {
@@ -81,8 +88,8 @@
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       background-size: contain;
       z-index: 1;
       opacity: 0.4;
@@ -146,6 +153,13 @@
       100% { transform: translateY(100%); }
     }
 
+    /* Main content wrapper */
+    .content-wrapper {
+      position: relative;
+      z-index: 2;
+      padding: 0 20px;
+    }
+
     /* Glowing neon elements */
     .neon {
       text-shadow: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow);
@@ -187,24 +201,26 @@
     .spaceship-container {
       text-align: center;
       margin-top: 30px;
+      margin-bottom: 40px;
       z-index: 2;
       position: relative;
       animation: float 6s ease-in-out infinite;
     }
     
-    .spaceship-container img,
     .logo {
       opacity: 0;
       transition: opacity 3s, transform 0.5s;
-      max-width: 100%;
+      max-width: 200px;
+      width: 20%;
+      min-width: 120px;
       height: auto;
       filter: sepia(0.5) hue-rotate(10deg) saturate(1.5);
     }
 
     /* Job Listings Section */
     .job-listings {
-      max-width: 900px;
-      margin: 100px auto 50px;
+      max-width: 1200px;
+      margin: 60px auto 50px;
       z-index: 2;
       position: relative;
     }
@@ -217,9 +233,12 @@
     
     .job-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       grid-gap: 20px;
-      margin: 0 15px;
+      margin: 0 auto;
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 15px;
     }
 
     .job-item {
@@ -409,6 +428,7 @@
       justify-content: center;
       align-items: center;
       gap: 15px;
+      flex-wrap: wrap;
     }
 
     .tagline-word {
@@ -434,6 +454,7 @@
       position: relative;
       background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(5px);
+      width: 100%;
     }
     
     .social-container {
@@ -480,13 +501,104 @@
     
     /* claptac #2 random comment */
 
-    /* Example media query for smaller screens */
+    /* Media queries for better responsiveness */
+    @media (max-width: 1200px) {
+      .job-container {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .holo-scanner-text {
+        font-size: 2.2em;
+        margin-top: 60px;
+      }
+      
+      .job-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+      
+      .logo {
+        width: 30%;
+      }
+      
+      .parallax-far {
+        background-size: 30%;
+      }
+    }
+    
     @media (max-width: 600px) {
       .holo-scanner-text {
-        font-size: 1.8em;
+        font-size: 1.6em;
+        margin-top: 40px;
       }
+      
       .job-listings h2 {
         font-size: 1.6em;
+      }
+      
+      .job-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .logo {
+        width: 40%;
+      }
+      
+      .application-form {
+        padding: 20px 15px;
+      }
+      
+      .application-form h3 {
+        font-size: 1.5em;
+      }
+      
+      .application-tagline {
+        font-size: 1.1em;
+      }
+      
+      .parallax-far {
+        background-size: 40%;
+      }
+      
+      .job-item:hover {
+        transform: translateY(-5px) scale(1.01);
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .holo-scanner-text {
+        font-size: 1.4em;
+        margin-top: 30px;
+      }
+      
+      .job-listings {
+        margin-top: 30px;
+      }
+      
+      .logo {
+        width: 50%;
+      }
+      
+      .apply-btn {
+        padding: 12px 25px;
+        font-size: 1em;
+      }
+    }
+    
+    /* Touch device optimization */
+    @media (hover: none) {
+      .job-item .details {
+        max-height: unset;
+      }
+      
+      .job-item:hover {
+        transform: none;
+      }
+      
+      .apply-btn:hover {
+        transform: none;
+        letter-spacing: 1px;
       }
     }
   </style>
@@ -499,133 +611,134 @@
   <div class="parallax parallax-mid"></div>
   <div class="parallax parallax-near"></div>
 
-  <!-- Header animation text (Holographic scanner) -->
-  <div id="scannerText" class="holo-scanner-text neon" data-text="Mission: Code the Cosmos"></div>
+  <div class="content-wrapper">
+    <!-- Header animation text (Holographic scanner) -->
+    <div id="scannerText" class="holo-scanner-text neon" data-text="Mission: Code the Cosmos"></div>
 
-  <!-- Company logo (replaces spaceship container) -->
-<div class="spaceship-container">
-    <img 
-        src="assets/logo.png"
-        class="logo"
-        alt="Company Logo" 
-        id="spaceship"
-        style="max-width: 20%; height: auto;"
-    />
-</div>
+    <!-- Company logo (replaces spaceship container) -->
+    <div class="spaceship-container">
+      <img 
+          src="assets/logo.png"
+          class="logo"
+          alt="Company Logo" 
+          id="spaceship"
+      />
+    </div>
 
-  <!-- Job Listings Section -->
-  <div class="job-listings">
-    <h2 class="neon">Open Positions</h2>
-    <div class="job-container">
-      <div class="job-item">
-        <h3 class="neon">Front-end Development</h3>
-        <p>Craft stellar user interfaces with cutting-edge web technologies.</p>
-        <div class="details">
-          <p>Requirements: Expertise in modern JavaScript frameworks, responsive design, and component architecture.</p>
-          <div class="tech-badge">React</div>
-          <div class="tech-badge">Vue.js</div>
-          <div class="tech-badge">TypeScript</div>
-          <div class="tech-badge">CSS/SASS</div>
-          <div class="tech-badge">Responsive Design</div>
+    <!-- Job Listings Section -->
+    <div class="job-listings">
+      <h2 class="neon">Open Positions</h2>
+      <div class="job-container">
+        <div class="job-item">
+          <h3 class="neon">Front-end Development</h3>
+          <p>Craft stellar user interfaces with cutting-edge web technologies.</p>
+          <div class="details">
+            <p>Requirements: Expertise in modern JavaScript frameworks, responsive design, and component architecture.</p>
+            <div class="tech-badge">React</div>
+            <div class="tech-badge">Vue.js</div>
+            <div class="tech-badge">TypeScript</div>
+            <div class="tech-badge">CSS/SASS</div>
+            <div class="tech-badge">Responsive Design</div>
+          </div>
         </div>
-      </div>
-      
-      <div class="job-item">
-        <h3 class="neon">Back-end Development</h3>
-        <p>Build robust server systems that power our digital universe.</p>
-        <div class="details">
-          <p>Requirements: Experience with server-side programming, APIs, and database optimization.</p>
-          <div class="tech-badge">Node.js</div>
-          <div class="tech-badge">Python</div>
-          <div class="tech-badge">REST APIs</div>
-          <div class="tech-badge">Express</div>
-          <div class="tech-badge">Security</div>
+        
+        <div class="job-item">
+          <h3 class="neon">Back-end Development</h3>
+          <p>Build robust server systems that power our digital universe.</p>
+          <div class="details">
+            <p>Requirements: Experience with server-side programming, APIs, and database optimization.</p>
+            <div class="tech-badge">Node.js</div>
+            <div class="tech-badge">Python</div>
+            <div class="tech-badge">REST APIs</div>
+            <div class="tech-badge">Express</div>
+            <div class="tech-badge">Security</div>
+          </div>
         </div>
-      </div>
-      
-      <div class="job-item">
-        <h3 class="neon">Full-stack Development</h3>
-        <p>Navigate both client and server domains with equal expertise.</p>
-        <div class="details">
-          <p>Requirements: Mastery of front-end technologies, back-end systems, and full application lifecycle.</p>
-          <div class="tech-badge">JavaScript</div>
-          <div class="tech-badge">React/Vue</div>
-          <div class="tech-badge">Node.js</div>
-          <div class="tech-badge">API Design</div>
-          <div class="tech-badge">CI/CD</div>
+        
+        <div class="job-item">
+          <h3 class="neon">Full-stack Development</h3>
+          <p>Navigate both client and server domains with equal expertise.</p>
+          <div class="details">
+            <p>Requirements: Mastery of front-end technologies, back-end systems, and full application lifecycle.</p>
+            <div class="tech-badge">JavaScript</div>
+            <div class="tech-badge">React/Vue</div>
+            <div class="tech-badge">Node.js</div>
+            <div class="tech-badge">API Design</div>
+            <div class="tech-badge">CI/CD</div>
+          </div>
+        </div>
+
+        <div class="job-item">
+          <h3 class="neon">UI/UX Design</h3>
+          <p>Chart intuitive journeys through our digital interfaces.</p>
+          <div class="details">
+            <p>Requirements: Expertise in user experience research, wireframing, prototyping, and design systems.</p>
+            <div class="tech-badge">Figma</div>
+            <div class="tech-badge">Adobe XD</div>
+            <div class="tech-badge">User Testing</div>
+            <div class="tech-badge">Design Systems</div>
+            <div class="tech-badge">Accessibility</div>
+          </div>
+        </div>
+        
+        <div class="job-item">
+          <h3 class="neon">Database Management</h3>
+          <p>Optimize and secure our data storage and retrieval systems.</p>
+          <div class="details">
+            <p>Requirements: Experience with database design, optimization, and maintaining data integrity.</p>
+            <div class="tech-badge">MongoDB</div>
+            <div class="tech-badge">PostgreSQL</div>
+            <div class="tech-badge">SQL</div>
+            <div class="tech-badge">Data Modeling</div>
+            <div class="tech-badge">Performance</div>
+          </div>
+        </div>
+        
+        <div class="job-item">
+          <h3 class="neon">DevOps</h3>
+          <p>Deploy and maintain our applications across the digital cosmos.</p>
+          <div class="details">
+            <p>Requirements: Proficiency in container technologies, CI/CD pipelines, and cloud infrastructure.</p>
+            <div class="tech-badge">Docker</div>
+            <div class="tech-badge">Kubernetes</div>
+            <div class="tech-badge">CI/CD</div>
+            <div class="tech-badge">AWS/Azure</div>
+            <div class="tech-badge">Infrastructure as Code</div>
+          </div>
         </div>
       </div>
 
-      <div class="job-item">
-        <h3 class="neon">UI/UX Design</h3>
-        <p>Chart intuitive journeys through our digital interfaces.</p>
-        <div class="details">
-          <p>Requirements: Expertise in user experience research, wireframing, prototyping, and design systems.</p>
-          <div class="tech-badge">Figma</div>
-          <div class="tech-badge">Adobe XD</div>
-          <div class="tech-badge">User Testing</div>
-          <div class="tech-badge">Design Systems</div>
-          <div class="tech-badge">Accessibility</div>
-        </div>
-      </div>
-      
-      <div class="job-item">
-        <h3 class="neon">Database Management</h3>
-        <p>Optimize and secure our data storage and retrieval systems.</p>
-        <div class="details">
-          <p>Requirements: Experience with database design, optimization, and maintaining data integrity.</p>
-          <div class="tech-badge">MongoDB</div>
-          <div class="tech-badge">PostgreSQL</div>
-          <div class="tech-badge">SQL</div>
-          <div class="tech-badge">Data Modeling</div>
-          <div class="tech-badge">Performance</div>
-        </div>
-      </div>
-      
-      <div class="job-item">
-        <h3 class="neon">DevOps</h3>
-        <p>Deploy and maintain our applications across the digital cosmos.</p>
-        <div class="details">
-          <p>Requirements: Proficiency in container technologies, CI/CD pipelines, and cloud infrastructure.</p>
-          <div class="tech-badge">Docker</div>
-          <div class="tech-badge">Kubernetes</div>
-          <div class="tech-badge">CI/CD</div>
-          <div class="tech-badge">AWS/Azure</div>
-          <div class="tech-badge">Infrastructure as Code</div>
-        </div>
+      <!-- Apply Now Button -->
+      <div class="cta-container">
+        <a href="#applyForm" class="apply-btn" id="warpButton">Join Our Crew</a>
       </div>
     </div>
 
-    <!-- Apply Now Button -->
-    <div class="cta-container">
-      <a href="#applyForm" class="apply-btn" id="warpButton">Join Our Crew</a>
+    <!-- Application Portal with Google Form button -->
+    <div id="applyForm" class="application-form">
+      <h3 class="neon">Warp-Speed Application Portal</h3>
+      
+      <div class="application-tagline">
+        <span class="tagline-word neon" style="--index: 0;">Learn</span>
+        <span class="tagline-word" style="font-size: 1.2em;">•</span>
+        <span class="tagline-word neon" style="--index: 1;">Earn</span>
+        <span class="tagline-word" style="font-size: 1.2em;">•</span>
+        <span class="tagline-word neon" style="--index: 2;">Grow</span>
+      </div>
+      
+      <p>Ready to launch your career into the next dimension? Join our team of stellar developers and make an impact across the digital universe.</p>
+      
+      <!-- claptac #3 - random comment -->
+      <div class="cta-container">
+        <a href="https://forms.gle/Q6CV1RNTmCd9fZz88" target="_blank" class="apply-btn google-form-btn">Continue to Application</a>
+      </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 AMMOO.LK | All Rights Reserved Across the Digital Universe</p>
+    </footer>
   </div>
-
-  <!-- Application Portal with Google Form button -->
-  <div id="applyForm" class="application-form">
-    <h3 class="neon">Warp-Speed Application Portal</h3>
-    
-    <div class="application-tagline">
-      <span class="tagline-word neon" style="--index: 0;">Learn</span>
-      <span class="tagline-word" style="font-size: 1.2em;">•</span>
-      <span class="tagline-word neon" style="--index: 1;">Earn</span>
-      <span class="tagline-word" style="font-size: 1.2em;">•</span>
-      <span class="tagline-word neon" style="--index: 2;">Grow</span>
-    </div>
-    
-    <p>Ready to launch your career into the next dimension? Join our team of stellar developers and make an impact across the digital universe.</p>
-    
-    <!-- claptac #3 - random comment -->
-    <div class="cta-container">
-      <a href="https://forms.gle/Q6CV1RNTmCd9fZz88" target="_blank" class="apply-btn google-form-btn">Continue to Application</a>
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 AMMOO.LK | All Rights Reserved Across the Digital Universe</p>
-  </footer>
 
   <script>
     // Text reveal animation
@@ -658,10 +771,12 @@
       }
     }
 
-    // Enhanced dynamic starfield background
+    // Enhanced dynamic starfield background with improved coverage
     function createStars() {
       const starsContainer = document.getElementById('stars');
-      const starCount = 350; // More stars for better effect
+      const starCount = 600; // Increased star count for better coverage
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = Math.max(document.body.scrollHeight, window.innerHeight);
       
       for (let i = 0; i < starCount; i++) {
         const star = document.createElement('div');
@@ -681,7 +796,8 @@
           star.classList.add('gold');
         }
         
-        star.style.top = `${Math.random() * 100}%`;
+        // Make sure stars are distributed across the entire document height
+        star.style.top = `${Math.random() * 150}%`;
         star.style.left = `${Math.random() * 100}%`;
         
         const duration = Math.random() * 3 + 2;
@@ -690,7 +806,16 @@
         
         starsContainer.appendChild(star);
       }
+      
+      // Update stars container height to cover entire document
+      window.addEventListener('resize', () => {
+        starsContainer.style.height = `${Math.max(document.body.scrollHeight, window.innerHeight)}px`;
+      });
+      
+      // Initial height setup
+      starsContainer.style.height = `${Math.max(document.body.scrollHeight, window.innerHeight)}px`;
     }
+
 
     // Create cursor trail effect
     function createCursorTrail() {
