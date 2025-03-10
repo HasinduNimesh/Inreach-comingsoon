@@ -742,7 +742,7 @@
 
   <script>
     // Text reveal animation
-    const scannerText = "Mission: Join the Galactic Crew";
+    const scannerText = "Mission: Code the Cosmos";
     let index = 0;
 
     function revealText() {
@@ -850,57 +850,276 @@
       });
     }
 
-    // Sound effects (console logs)
-    function playSound(type) {
-      console.log(`Playing sound: ${type}`);
-    }
+// Replace the playSound function with this implementation
 
-    // Warp drive transition
-    document.getElementById("warpButton").addEventListener("click", function(e) {
-      e.preventDefault();
+// Sound system implementation
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const soundEffects = {
+  glitch: null,
+  engine: null,
+  warp: null,
+  hover: null
+};
+
+// Preload sound effects
+function preloadSounds() {
+  // Simple oscillator-based sound effects
+  
+  function createGlitchSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sawtooth';
+    oscillator.frequency.setValueAtTime(200 + Math.random() * 500, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.1);
+  }
+  
+  function createEngineSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 1);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.2);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 2);
+  }
+  
+  function createWarpSound() {
+    const oscillator1 = audioContext.createOscillator();
+    const oscillator2 = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator1.type = 'sine';
+    oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
+    oscillator1.frequency.exponentialRampToValueAtTime(2000, audioContext.currentTime + 0.5);
+    
+    oscillator2.type = 'sawtooth';
+    oscillator2.frequency.setValueAtTime(150, audioContext.currentTime);
+    oscillator2.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.8);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
+    
+    oscillator1.connect(gainNode);
+    oscillator2.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator1.start();
+    oscillator2.start();
+    oscillator1.stop(audioContext.currentTime + 0.8);
+    oscillator2.stop(audioContext.currentTime + 0.8);
+  }
+  
+  function createHoverSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.05);
+    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.2);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.2);
+  }
+  
+  soundEffects.glitch = createGlitchSound;
+  soundEffects.engine = createEngineSound;
+  soundEffects.warp = createWarpSound;
+  soundEffects.hover = createHoverSound;
+}
+
+// Play sound effect
+function playSound(type) {
+  // Resume audio context if it's suspended (browser policy)
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  
+  // Check if sound type exists
+  if (soundEffects[type]) {
+    soundEffects[type]();
+    console.log(`Playing sound: ${type}`);
+  } else {
+    console.log(`Sound effect '${type}' not found`);
+  }
+}
+
+// Initialize the sound system on the first user interaction
+function initAudio() {
+  // Only initialize once
+  if (!window.audioInitialized) {
+    window.audioInitialized = true;
+    preloadSounds();
+    
+    // Remove the listener after first use
+    document.removeEventListener('click', initAudio);
+    document.removeEventListener('keydown', initAudio);
+  }
+}
+
+// Add event listeners for first user interaction
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+
+
+  // Warp drive transition
+  document.getElementById("warpButton").addEventListener("click", function(e) {
+    e.preventDefault();
+    
+    playSound('warp');
+    
+    // Create the primary warp overlay
+    const warpOverlay = document.createElement('div');
+    warpOverlay.style.position = 'fixed';
+    warpOverlay.style.top = '0';
+    warpOverlay.style.left = '0';
+    warpOverlay.style.width = '100%';
+    warpOverlay.style.height = '100%';
+    warpOverlay.style.background = 'radial-gradient(circle at center, var(--secondary-glow) 0%, var(--primary-glow) 50%, transparent 80%)';
+    warpOverlay.style.opacity = '0';
+    warpOverlay.style.zIndex = '999';
+    warpOverlay.style.transition = 'all 0.8s ease-out';
+    warpOverlay.style.pointerEvents = 'none';
+    warpOverlay.style.mixBlendMode = 'screen';
+    
+    // Create additional particle effects for a more explosive look
+    for (let i = 0; i < 6; i++) {
+      const particle = document.createElement('div');
+      particle.style.position = 'fixed';
+      particle.style.top = '50%';
+      particle.style.left = '50%';
+      particle.style.width = '100%';
+      particle.style.height = '100%';
+      particle.style.background = 'radial-gradient(circle at center, var(--secondary-glow) 0%, transparent 70%)';
+      particle.style.opacity = '0';
+      particle.style.transform = 'translate(-50%, -50%) scale(0.1)';
+      particle.style.zIndex = '998';
+      particle.style.borderRadius = '50%';
+      particle.style.transition = `all ${0.7 + i * 0.1}s cubic-bezier(0.19, 1, 0.22, 1)`;
+      particle.style.pointerEvents = 'none';
       
-      playSound('warp');
+      document.body.appendChild(particle);
       
-      const warpOverlay = document.createElement('div');
-      warpOverlay.style.position = 'fixed';
-      warpOverlay.style.top = '0';
-      warpOverlay.style.left = '0';
-      warpOverlay.style.width = '100%';
-      warpOverlay.style.height = '100%';
-      warpOverlay.style.background = 'linear-gradient(90deg, var(--primary-glow), var(--secondary-glow))';
-      warpOverlay.style.opacity = '0';
-      warpOverlay.style.zIndex = '999';
-      warpOverlay.style.transition = 'opacity 0.5s';
-      
-      document.body.appendChild(warpOverlay);
-      
+      // Animate each particle with slight delay
       setTimeout(() => {
-        warpOverlay.style.opacity = '0.8';
-      }, 10);
-      
-      setTimeout(() => {
-        const form = document.getElementById('applyForm');
-        form.scrollIntoView({ behavior: 'smooth' });
-        form.classList.add('visible');
+        particle.style.opacity = '0.9';
+        particle.style.transform = `translate(-50%, -50%) scale(${1.5 + i * 0.5})`;
         
-        warpOverlay.style.opacity = '0';
         setTimeout(() => {
-          document.body.removeChild(warpOverlay);
-        }, 500);
+          particle.style.opacity = '0';
+          setTimeout(() => document.body.removeChild(particle), 800);
+        }, 600);
+      }, i * 50);
+    }
+    
+    // Create full screen flash
+    const flash = document.createElement('div');
+    flash.style.position = 'fixed';
+    flash.style.top = '0';
+    flash.style.left = '0';
+    flash.style.width = '100%';
+    flash.style.height = '100%';
+    flash.style.background = 'var(--secondary-glow)';
+    flash.style.opacity = '0';
+    flash.style.zIndex = '997';
+    flash.style.transition = 'opacity 0.3s ease';
+    flash.style.pointerEvents = 'none';
+    
+    document.body.appendChild(flash);
+    document.body.appendChild(warpOverlay);
+    
+    // Force reflow before adding transition
+    warpOverlay.offsetHeight;
+    
+    // Flash effect
+    setTimeout(() => {
+      flash.style.opacity = '0.7';
+      setTimeout(() => {
+        flash.style.opacity = '0';
+      }, 150);
+    }, 50);
+    
+    // Main warp overlay animation
+    setTimeout(() => {
+      warpOverlay.style.opacity = '0.95';
+      warpOverlay.style.transform = 'scale(2)';
+    }, 10);
+    
+    // Scroll to application form
+    setTimeout(() => {
+      const form = document.getElementById('applyForm');
+      form.scrollIntoView({ behavior: 'smooth' });
+      form.classList.add('visible');
+      
+      warpOverlay.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(warpOverlay);
+        document.body.removeChild(flash);
       }, 800);
-    });
+    }, 800);
+  });
 
-    // Initialize everything on load
-    window.onload = function() {
-      // claptac #4 - random comment
-      console.log("CLAPTAC");
-      createStars();
-      createCursorTrail();
-      revealText();
-      document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
-        item.addEventListener('mouseenter', () => playSound('hover'));
-      });
-    };
+  // Initialize everything on load
+  window.onload = function() {
+    // claptac #4 - random comment
+    console.log("CLAPTAC");
+    createStars();
+    createCursorTrail();
+    revealText();
+    
+    // Add hover sounds to interactive elements
+    document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
+      item.addEventListener('mouseenter', () => playSound('hover'));
+    });
+    
+    // Show a message about enabling sound
+    const soundMessage = document.createElement('div');
+    soundMessage.style.position = 'fixed';
+    soundMessage.style.bottom = '20px';
+    soundMessage.style.right = '20px';
+    soundMessage.style.background = 'rgba(0, 0, 0, 0.7)';
+    soundMessage.style.color = 'var(--primary-glow)';
+    soundMessage.style.padding = '10px 15px';
+    soundMessage.style.borderRadius = '8px';
+    soundMessage.style.fontSize = '0.9em';
+    soundMessage.style.zIndex = '100';
+    soundMessage.style.transition = 'opacity 1s';
+    soundMessage.innerHTML = 'Click anywhere for sound effects';
+    document.body.appendChild(soundMessage);
+    
+    setTimeout(() => {
+      soundMessage.style.opacity = '0';
+      setTimeout(() => {
+        document.body.removeChild(soundMessage);
+      }, 1000);
+    }, 5000);
+  };
   </script>
 </body>
 </html>
