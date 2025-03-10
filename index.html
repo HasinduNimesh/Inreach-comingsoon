@@ -1,460 +1,781 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-P52L2MBD');</script>
-  <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Something Big Is Coming!</title>
-  <!-- Add favicon using logo.png -->
-  <link rel="icon" href="./assets/logo.png" type="image/png">
-  
-
-  <!-- Use Google Fonts: Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
-
+  <title>We Are Hiring - Galactic Crew</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added for responsiveness -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
   <style>
-    /* ---------- GLOBAL STYLES ---------- */
+    /* Basic reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #111;
-      color: #fff;
-      min-height: 100vh;
+
+    :root {
+      --primary-glow: #f8c303; /* Your logo gold */
+      --secondary-glow: #ffda47; /* Lighter gold variant */
+      --dark-gold: #a87d00; /* Darker gold variant */
+      --text-color: #fff6e1; /* Warm white for better contrast with gold */
+      --panel-bg: rgba(0, 0, 0, 0.7); /* Black with transparency */
+      --hologram-blue: rgba(0, 255, 255, 0.2); /* Hologram effect color */
     }
-    .container {
-      text-align: center;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      position: relative;
-      z-index: 2; /* above stars */
+    
+    body {
+      overflow-x: hidden;
+      background: #000; /* Pure black space background */
+      color: var(--text-color);
+      height: 200vh; /* for parallax scrolling */
+      font-family: 'Rajdhani', sans-serif;
+      perspective: 1000px;
     }
 
-    /* ---------- STAR BACKGROUND ---------- */
-    .stars {
-      position: fixed; 
-      width: 100%;
-      height: 100%;
+    /* Enhanced Starfield background */
+    #stars {
+      position: fixed;
       top: 0;
       left: 0;
-      overflow: hidden;
-      z-index: 1;
-      /* Apply a subtle hit (pulse) effect on load */
-      animation: hitEffect 1s ease-out forwards;
-    }
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      opacity: 0.8;
-      animation: travelStars linear infinite;
-    }
-    @keyframes travelStars {
-      from {
-        transform: translateY(100vh) scale(0.5);
-        opacity: 1;
-      }
-      to {
-        transform: translateY(-100vh) scale(2);
-        opacity: 0;
-      }
-    }
-    /* Keyframes for the initial hit (pulse) effect */
-    @keyframes hitEffect {
-      0% { filter: brightness(1); }
-      50% { filter: brightness(1.3); }
-      100% { filter: brightness(1); }
-    }
-    /* Keyframes for the star collision (blur) effect */
-    @keyframes starCollision {
-      0% { filter: blur(0px); opacity: 1; }
-      50% { filter: blur(8px); opacity: 0.6; }
-      100% { filter: blur(0px); opacity: 1; }
-    }
-    /* When the collision effect is triggered */
-    .stars.collision {
-      animation: starCollision 0.5s ease-out !important;
-    }
-
-    /* ---------- PAGE TEXT ---------- */
-    h1 {
-      font-size: 3rem;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      font-weight: 700;
-      margin-top: 40px;
-    }
-    p {
-      font-size: 1.2rem;
-      margin-top: 10px;
-      font-weight: 400;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* ---------- TIME COUNT DESIGN ---------- */
-    .time-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 20px;
-      margin-bottom: 50px; /* Increased bottom gap before the cube */
-    }
-    .time-box {
-      background: #222;
-      padding: 10px;
-      border: 2px solid #c8a577;
-      border-radius: 5px;
-      width: 80px;
-      text-align: center;
-    }
-    .time-value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      display: block;
-    }
-    .time-label {
-      font-size: 1rem;
-      margin-top: 5px;
-      color: #ccc;
-      display: block;
-    }
-
-    /* ---------- SECRET TEXT ---------- */
-    .secret-text {
-      display: none;
-      font-size: 1.5rem;
-      margin-top: 120px;  /* Increased gap between the cube and this text */
-      font-weight: 300;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-    }
-    .secret-text.show {
-      display: block;
-      opacity: 1;
-    }
-
-    /* ---------- 3D BOX (Perfect Cube) ---------- */
-    .box-container {
-      margin: 100px auto;  /* Increased top & bottom margin around the box */
-      perspective: 800px; 
-      cursor: pointer; /* Indicate it's clickable */
-    }
-    .box {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto;
-      position: relative;
-      transform-style: preserve-3d;
-      transform: rotateX(-20deg) rotateY(25deg);
-      transition: transform 0.2s linear, opacity 1s ease;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-    .face {
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      background: #c8a577;
-      border: 1px solid rgba(0, 0, 0, 0.2);
-    }
-    /* Each face is translated half the box’s depth (75px for 150px width) */
-    .front  { transform: rotateY(0deg)   translateZ(75px); }
-    .back   { transform: rotateY(180deg) translateZ(75px); }
-    .left   { transform: rotateY(-90deg) translateZ(75px); }
-    .right  { transform: rotateY(90deg)  translateZ(75px); }
-    .top    { transform: rotateX(90deg)  translateZ(75px); }
-    .bottom { transform: rotateX(-90deg) translateZ(75px); }
-
-    /* Content for each face */
-    .face-content {
       width: 100%;
       height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      z-index: 0;
+      pointer-events: none;
     }
-    .face-content .line {
-      display: block;
-      text-align: center;
-      font-size: 2rem;
-      font-weight: 700;
-      line-height: 1.2;
+    
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 4px #fff, 0 0 8px #fff, 0 0 12px var(--primary-glow);
     }
 
-    /* Fade-out class to make the box disappear */
-    .box.fade-out {
+    .star.small {
+      width: 1px;
+      height: 1px;
+    }
+    
+    .star.medium {
+      width: 2px;
+      height: 2px;
+    }
+    
+    .star.large {
+      width: 3px;
+      height: 3px;
+    }
+
+    .star.gold {
+      background: var(--primary-glow);
+      box-shadow: 0 0 4px var(--primary-glow), 0 0 8px var(--secondary-glow);
+    }
+    
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
+    
+    /* Parallax layers */
+    .parallax {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      z-index: 1;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    
+    .parallax-near {
+      background: transparent url('https://www.transparentpng.com/thumb/asteroid/asteroid-transparent-background-21.png') repeat;
+      animation: drift 40s linear infinite;
+    }
+    
+    .parallax-mid {
+      background: transparent url('https://www.transparentpng.com/thumb/asteroid/small-asteroid-transparent-png-4.png') repeat;
+      animation: drift-reverse 60s linear infinite;
+    }
+    
+    .parallax-far {
+      background: transparent url('https://www.transparentpng.com/thumb/moon/best-moon-transparent-17.png') no-repeat;
+      background-size: 20%;
+      background-position: 80% 15%;
+      animation: subtle-float 120s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      0% { background-position: 0 0; }
+      100% { background-position: 1000px 400px; }
+    }
+    
+    @keyframes drift-reverse {
+      0% { background-position: 1000px 300px; }
+      100% { background-position: 0 0; }
+    }
+    
+    @keyframes subtle-float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-50px, 30px); }
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+    
+    @keyframes glitch {
+      0% { text-shadow: 0.05em 0 0 var(--primary-glow), -0.05em -0.025em 0 var(--dark-gold); }
+      14% { text-shadow: 0.05em 0 0 var(--primary-glow), -0.05em -0.025em 0 var(--dark-gold); }
+      15% { text-shadow: -0.05em -0.025em 0 var(--primary-glow), 0.025em 0.025em 0 var(--dark-gold); }
+      49% { text-shadow: -0.05em -0.025em 0 var(--primary-glow), 0.025em 0.025em 0 var(--dark-gold); }
+      50% { text-shadow: 0.025em 0.05em 0 var(--primary-glow), 0.05em 0 0 var(--dark-gold); }
+      99% { text-shadow: 0.025em 0.05em 0 var(--primary-glow), 0.05em 0 0 var(--dark-gold); }
+      100% { text-shadow: -0.025em 0 0 var(--primary-glow), -0.025em -0.025em 0 var(--dark-gold); }
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* Glowing neon elements */
+    .neon {
+      text-shadow: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow);
+      font-family: 'Orbitron', sans-serif;
+      letter-spacing: 1px;
+    }
+
+    .holo-scanner-text {
+      position: relative;
+      font-size: 2.8em;
+      text-align: center;
+      margin-top: 80px;
       opacity: 0;
+      animation: glitch 2s infinite alternate-reverse;
+      z-index: 2;
+    }
+    
+    .holo-scanner-text::before,
+    .holo-scanner-text::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+    
+    .holo-scanner-text::before {
+      color: var(--primary-glow);
+      animation: glitch 0.3s infinite;
+    }
+    
+    .holo-scanner-text::after {
+      color: var(--dark-gold);
+      animation: glitch 0.3s 0.1s infinite;
+    }
+    
+    .spaceship-container {
+      text-align: center;
+      margin-top: 30px;
+      z-index: 2;
+      position: relative;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .spaceship-container img,
+    .logo {
+      opacity: 0;
+      transition: opacity 3s, transform 0.5s;
+      max-width: 100%;
+      height: auto;
+      filter: sepia(0.5) hue-rotate(10deg) saturate(1.5);
+    }
+
+    /* Job Listings Section */
+    .job-listings {
+      max-width: 900px;
+      margin: 100px auto 50px;
+      z-index: 2;
+      position: relative;
+    }
+    
+    .job-listings h2 {
+      font-size: 2.2em;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    .job-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-gap: 20px;
+      margin: 0 15px;
+    }
+
+    .job-item {
+      background: var(--panel-bg);
+      padding: 25px;
+      margin: 10px 0;
+      border-radius: 12px;
+      border: 1px solid rgba(248, 195, 3, 0.3); /* Gold border with transparency */
+      backdrop-filter: blur(10px);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      transform-style: preserve-3d;
+    }
+
+    /* Futuristic scanline effect */
+    .job-item::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, transparent, var(--hologram-blue), transparent);
+      opacity: 0.2;
+      animation: scanline 2s linear infinite;
+      z-index: 1;
       pointer-events: none;
     }
 
-    /* ---------- LOGO WITH SUBTLE NEON YELLOW SHADOW ---------- */
-    .logo {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    /* Removed extra margin to ensure proper centering */
-    transform: translate(-50%, -50%) scale(0.01);
-    width: 200px;
-    height: 200px;
-    opacity: 0;
-    transition: transform 1s ease, opacity 1s ease;
-    z-index: 999;
-  }
-  .logo.glow {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 1;
-    animation: glowing 1.5s infinite ease-in-out;
-  }
+    .job-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(248, 195, 3, 0.2), transparent); /* Gold gradient */
+      transition: left 0.5s;
+    }
 
-  @keyframes glowing {
-    0% {
-      filter: drop-shadow(0 0 5px #ffea00) drop-shadow(0 0 10px #ffea00);
+    .job-item:hover {
+      transform: translateY(-15px) scale(1.03) rotateX(5deg);
+      box-shadow: 0 15px 30px rgba(248, 195, 3, 0.15);
     }
-    50% {
-      filter: drop-shadow(0 0 20px #ffea00) drop-shadow(0 0 30px #ffea00);
+    
+    .job-item:hover::before {
+      left: 100%;
     }
-    100% {
-      filter: drop-shadow(0 0 5px #ffea00) drop-shadow(0 0 10px #ffea00);
+    
+    .job-item h3 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+      color: var(--primary-glow);
     }
-  }
+    
+    .job-item p {
+      font-size: 0.9em;
+      margin: 10px 0;
+      opacity: 0.8;
+    }
+    
+    .job-item .details {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-in-out;
+    }
+    
+    .job-item:hover .details {
+      max-height: 250px;
+    }
+    
+    .job-item .tech-badge {
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      margin: 5px 3px 0 0;
+      border: 1px solid var(--primary-glow);
+      color: var(--primary-glow);
+    }
 
-    /* ---------- MEDIA QUERIES ---------- */
+    /* Apply Now Button */
+    .cta-container {
+      text-align: center;
+      margin: 40px 0;
+    }
+    
+    .apply-btn {
+      display: inline-block;
+      padding: 15px 40px;
+      margin: 20px 0;
+      background: linear-gradient(90deg, var(--primary-glow), var(--dark-gold));
+      color: #000;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      font-family: 'Orbitron', sans-serif;
+      cursor: pointer;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      font-size: 1.2em;
+      letter-spacing: 1px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 2;
+    }
+    
+    .apply-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent 30%);
+      animation: rotate 4s linear infinite;
+      z-index: -1;
+    }
+    
+    @keyframes rotate {
+      100% { transform: rotate(1turn); }
+    }
+    
+    .apply-btn:hover {
+      box-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--dark-gold);
+      transform: scale(1.05) translateY(-5px);
+      letter-spacing: 2px;
+    }
+    
+    .apply-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Application Form */
+    .application-form {
+      background: var(--panel-bg);
+      max-width: 700px;
+      margin: 0 auto 50px;
+      padding: 30px;
+      border-radius: 15px;
+      border: 1px solid rgba(248, 195, 3, 0.3); /* Gold border */
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
+      z-index: 2;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* claptac #1 - random comment */
+    
+    /* Holographic effect */
+    .application-form::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--hologram-blue) 0%, transparent 70%);
+      opacity: 0.1;
+      animation: rotate 20s linear infinite;
+      pointer-events: none;
+    }
+    
+    .application-form.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    
+    .application-form h3 {
+      margin-bottom: 15px;
+      font-size: 1.8em;
+      text-align: center;
+    }
+
+    .application-tagline {
+      text-align: center;
+      font-size: 1.3em;
+      margin-bottom: 25px;
+      color: var(--primary-glow);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .tagline-word {
+      position: relative;
+      display: inline-block;
+      animation: float 4s ease-in-out infinite;
+      animation-delay: calc(var(--index) * 0.5s);
+    }
+
+    .application-form .google-form-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1em;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding: 30px 0;
+      z-index: 2;
+      position: relative;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+    }
+    
+    .social-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .social-drone {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      margin: 0 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .social-drone img {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.3s ease;
+      filter: sepia(0.8) hue-rotate(320deg) saturate(1.5);
+    }
+    
+    .social-drone:hover {
+      animation: float 1s ease-in-out infinite;
+    }
+    
+    .social-drone:hover img {
+      transform: scale(1.2) rotate(5deg);
+    }
+
+    /* Comet cursor (gold) */
+    .cursor-trail {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: var(--primary-glow);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      box-shadow: 0 0 6px var(--primary-glow);
+    }
+    
+    /* claptac #2 random comment */
+
+    /* Example media query for smaller screens */
     @media (max-width: 600px) {
-      h1 {
-        font-size: 2rem;
-        margin-top: 30px;
+      .holo-scanner-text {
+        font-size: 1.8em;
       }
-      p {
-        font-size: 1rem;
-      }
-      /* Adjust the time boxes so the text fits inside */
-      .time-box {
-        width: 70px;
-        padding: 8px;
-      }
-      .time-value {
-        font-size: 1.2rem;
-      }
-      .time-label {
-        font-size: 0.8rem;
-      }
-      .face-content .line {
-        font-size: 1.5rem;
-      }
-      .box {
-        width: 120px;
-        height: 120px;
-      }
-      .face {
-        width: 120px;
-        height: 120px;
-      }
-      /* Recalculate translation since half of 120 is 60px */
-      .front  { transform: rotateY(0deg)   translateZ(60px); }
-      .back   { transform: rotateY(180deg) translateZ(60px); }
-      .left   { transform: rotateY(-90deg) translateZ(60px); }
-      .right  { transform: rotateY(90deg)  translateZ(60px); }
-      .top    { transform: rotateX(90deg)  translateZ(60px); }
-      .bottom { transform: rotateX(-90deg) translateZ(60px); }
-      .secret-text {
-        margin-top: 100px;
+      .job-listings h2 {
+        font-size: 1.6em;
       }
     }
   </style>
 </head>
 <body>
-
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P52L2MBD"
-  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
+  <div id="stars"></div>
   
-  <!-- Star background -->
-  <div class="stars" id="stars"></div>
+  <!-- Parallax background elements -->
+  <div class="parallax parallax-far"></div>
+  <div class="parallax parallax-mid"></div>
+  <div class="parallax parallax-near"></div>
 
-  <div class="container">
-    <h1>Something Big Is Coming!</h1>
-    <p>We're working on something extraordinary. Stay tuned!</p>
+  <!-- Header animation text (Holographic scanner) -->
+  <div id="scannerText" class="holo-scanner-text neon" data-text="Mission: Code the Cosmos"></div>
 
-    <!-- Time Container with Matching Boxes -->
-    <div class="time-container" id="timeContainer">
-      <div class="time-box">
-        <span class="time-value" id="days">0</span>
-        <span class="time-label">Days</span>
+  <!-- Company logo (replaces spaceship container) -->
+<div class="spaceship-container">
+    <img 
+        src="assets/logo.png"
+        class="logo"
+        alt="Company Logo" 
+        id="spaceship"
+        style="max-width: 20%; height: auto;"
+    />
+</div>
+
+  <!-- Job Listings Section -->
+  <div class="job-listings">
+    <h2 class="neon">Open Positions</h2>
+    <div class="job-container">
+      <div class="job-item">
+        <h3 class="neon">Front-end Development</h3>
+        <p>Craft stellar user interfaces with cutting-edge web technologies.</p>
+        <div class="details">
+          <p>Requirements: Expertise in modern JavaScript frameworks, responsive design, and component architecture.</p>
+          <div class="tech-badge">React</div>
+          <div class="tech-badge">Vue.js</div>
+          <div class="tech-badge">TypeScript</div>
+          <div class="tech-badge">CSS/SASS</div>
+          <div class="tech-badge">Responsive Design</div>
+        </div>
       </div>
-      <div class="time-box">
-        <span class="time-value" id="hours">0</span>
-        <span class="time-label">Hours</span>
+      
+      <div class="job-item">
+        <h3 class="neon">Back-end Development</h3>
+        <p>Build robust server systems that power our digital universe.</p>
+        <div class="details">
+          <p>Requirements: Experience with server-side programming, APIs, and database optimization.</p>
+          <div class="tech-badge">Node.js</div>
+          <div class="tech-badge">Python</div>
+          <div class="tech-badge">REST APIs</div>
+          <div class="tech-badge">Express</div>
+          <div class="tech-badge">Security</div>
+        </div>
       </div>
-      <div class="time-box">
-        <span class="time-value" id="minutes">0</span>
-        <span class="time-label">Minutes</span>
+      
+      <div class="job-item">
+        <h3 class="neon">Full-stack Development</h3>
+        <p>Navigate both client and server domains with equal expertise.</p>
+        <div class="details">
+          <p>Requirements: Mastery of front-end technologies, back-end systems, and full application lifecycle.</p>
+          <div class="tech-badge">JavaScript</div>
+          <div class="tech-badge">React/Vue</div>
+          <div class="tech-badge">Node.js</div>
+          <div class="tech-badge">API Design</div>
+          <div class="tech-badge">CI/CD</div>
+        </div>
       </div>
-      <div class="time-box">
-        <span class="time-value" id="seconds">0</span>
-        <span class="time-label">Seconds</span>
+
+      <div class="job-item">
+        <h3 class="neon">UI/UX Design</h3>
+        <p>Chart intuitive journeys through our digital interfaces.</p>
+        <div class="details">
+          <p>Requirements: Expertise in user experience research, wireframing, prototyping, and design systems.</p>
+          <div class="tech-badge">Figma</div>
+          <div class="tech-badge">Adobe XD</div>
+          <div class="tech-badge">User Testing</div>
+          <div class="tech-badge">Design Systems</div>
+          <div class="tech-badge">Accessibility</div>
+        </div>
+      </div>
+      
+      <div class="job-item">
+        <h3 class="neon">Database Management</h3>
+        <p>Optimize and secure our data storage and retrieval systems.</p>
+        <div class="details">
+          <p>Requirements: Experience with database design, optimization, and maintaining data integrity.</p>
+          <div class="tech-badge">MongoDB</div>
+          <div class="tech-badge">PostgreSQL</div>
+          <div class="tech-badge">SQL</div>
+          <div class="tech-badge">Data Modeling</div>
+          <div class="tech-badge">Performance</div>
+        </div>
+      </div>
+      
+      <div class="job-item">
+        <h3 class="neon">DevOps</h3>
+        <p>Deploy and maintain our applications across the digital cosmos.</p>
+        <div class="details">
+          <p>Requirements: Proficiency in container technologies, CI/CD pipelines, and cloud infrastructure.</p>
+          <div class="tech-badge">Docker</div>
+          <div class="tech-badge">Kubernetes</div>
+          <div class="tech-badge">CI/CD</div>
+          <div class="tech-badge">AWS/Azure</div>
+          <div class="tech-badge">Infrastructure as Code</div>
+        </div>
       </div>
     </div>
 
-    <!-- 3D Box -->
-    <div class="box-container" id="boxContainer">
-      <div class="box" id="box">
-        <!-- Front Face -->
-        <div class="face front">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-        <!-- Back Face -->
-        <div class="face back">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-        <!-- Left Face -->
-        <div class="face left">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-        <!-- Right Face -->
-        <div class="face right">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-        <!-- Top Face -->
-        <div class="face top">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-        <!-- Bottom Face -->
-        <div class="face bottom">
-          <div class="face-content">
-            <span class="line">COMING</span>
-            <span class="line">SOON</span>
-          </div>
-        </div>
-      </div>
-      <!-- Logo (hidden initially) -->
-      <img src="./assets/logo.png" alt="Logo" class="logo" id="logo" />
+    <!-- Apply Now Button -->
+    <div class="cta-container">
+      <a href="#applyForm" class="apply-btn" id="warpButton">Join Our Crew</a>
     </div>
-
-    <!-- Secret text that appears on box click (if desired) -->
-    <p class="secret-text" id="secret-text">Not yet! Patience is key. 😉</p>
   </div>
 
+  <!-- Application Portal with Google Form button -->
+  <div id="applyForm" class="application-form">
+    <h3 class="neon">Warp-Speed Application Portal</h3>
+    
+    <div class="application-tagline">
+      <span class="tagline-word neon" style="--index: 0;">Learn</span>
+      <span class="tagline-word" style="font-size: 1.2em;">•</span>
+      <span class="tagline-word neon" style="--index: 1;">Earn</span>
+      <span class="tagline-word" style="font-size: 1.2em;">•</span>
+      <span class="tagline-word neon" style="--index: 2;">Grow</span>
+    </div>
+    
+    <p>Ready to launch your career into the next dimension? Join our team of stellar developers and make an impact across the digital universe.</p>
+    
+    <!-- claptac #3 - random comment -->
+    <div class="cta-container">
+      <a href="https://forms.gle/Q6CV1RNTmCd9fZz88" target="_blank" class="apply-btn google-form-btn">Continue to Application</a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 AMMOO.LK | All Rights Reserved Across the Digital Universe</p>
+  </footer>
+
   <script>
-    /* ---------- STAR BACKGROUND GENERATOR ---------- */
-    function generateStars() {
+    // Text reveal animation
+    const scannerText = "Mission: Join the Galactic Crew";
+    let index = 0;
+
+    function revealText() {
+      const element = document.getElementById("scannerText");
+      element.style.opacity = "1";
+      
+      if (index < scannerText.length) {
+        element.textContent += scannerText.charAt(index);
+        element.setAttribute('data-text', element.textContent);
+        index++;
+        
+        // Varying speeds to simulate typing
+        const speed = Math.random() * 50 + 80;
+        setTimeout(revealText, speed);
+        
+        // Add glitch sound (console log)
+        if (Math.random() > 0.7) {
+          playSound('glitch');
+        }
+      } else {
+        // Fade in logo with sound
+        setTimeout(() => {
+          document.getElementById("spaceship").style.opacity = "1";
+          playSound('engine');
+        }, 500);
+      }
+    }
+
+    // Enhanced dynamic starfield background
+    function createStars() {
       const starsContainer = document.getElementById('stars');
-      if (!starsContainer) return;
-      for (let i = 0; i < 100; i++) {
+      const starCount = 350; // More stars for better effect
+      
+      for (let i = 0; i < starCount; i++) {
         const star = document.createElement('div');
-        star.classList.add('star');
-        star.style.left = Math.random() * 100 + "vw";
-        star.style.top = Math.random() * 100 + "vh";
-        star.style.animationDuration = (Math.random() * 3 + 2) + "s";
+        const size = Math.random();
+        const goldStar = Math.random() > 0.9; // 10% chance for gold stars
+        
+        let sizeClass = 'small';
+        if (size > 0.9) {
+          sizeClass = 'large';
+        } else if (size > 0.6) {
+          sizeClass = 'medium';
+        }
+        
+        star.classList.add('star', sizeClass);
+        
+        if (goldStar) {
+          star.classList.add('gold');
+        }
+        
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.left = `${Math.random() * 100}%`;
+        
+        const duration = Math.random() * 3 + 2;
+        const delay = Math.random() * 5;
+        star.style.animation = `twinkle ${duration}s ease-in-out ${delay}s infinite alternate`;
+        
         starsContainer.appendChild(star);
       }
     }
-    generateStars();
 
-    /* ---------- COUNTDOWN TIMER (Updating Each Time Box) ---------- */
-    function countdownTimer() {
-      const launchDate = new Date('2025-03-09T00:00:00').getTime();
-      setInterval(() => {
-        const now = new Date().getTime();
-        const timeLeft = launchDate - now;
-        if (timeLeft <= 0) {
-          document.getElementById('days').textContent = '0';
-          document.getElementById('hours').textContent = '0';
-          document.getElementById('minutes').textContent = '0';
-          document.getElementById('seconds').textContent = '0';
-        } else {
-          const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-          document.getElementById('days').textContent = days;
-          document.getElementById('hours').textContent = hours;
-          document.getElementById('minutes').textContent = minutes;
-          document.getElementById('seconds').textContent = seconds;
-        }
-      }, 1000);
-    }
-    countdownTimer();
-
-    /* ---------- BOX INTERACTION ---------- */
-    const boxContainer = document.getElementById('boxContainer');
-    const box = document.getElementById('box');
-    const logo = document.getElementById('logo');
-    const secretText = document.getElementById('secret-text');
-    const stars = document.getElementById('stars');
-
-    // Rotate the box with mouse movement
-    boxContainer.addEventListener('mousemove', (e) => {
-      const rect = boxContainer.getBoundingClientRect();
-      const xCenter = rect.width / 2;
-      const yCenter = rect.height / 2;
-      const xPos = e.clientX - rect.left;
-      const yPos = e.clientY - rect.top;
-      const rotateY = ((xPos - xCenter) / rect.width) * 40;
-      const rotateX = -((yPos - yCenter) / rect.height) * 40;
-      box.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    });
-
-    // Reset orientation on mouse leave
-    boxContainer.addEventListener('mouseleave', () => {
-      box.style.transform = 'rotateX(-20deg) rotateY(25deg)';
-    });
-
-    // For touch devices: allow rotation via touchmove (without resetting on touchend)
-    boxContainer.addEventListener('touchmove', (e) => {
-      e.preventDefault(); // Prevent scrolling while interacting with the box
-      const touch = e.touches[0];
-      const rect = boxContainer.getBoundingClientRect();
-      const xCenter = rect.width / 2;
-      const yCenter = rect.height / 2;
-      const xPos = touch.clientX - rect.left;
-      const yPos = touch.clientY - rect.top;
-      const rotateY = ((xPos - xCenter) / rect.width) * 40;
-      const rotateX = -((yPos - yCenter) / rect.height) * 40;
-      box.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    }, { passive: false });
-    
-    // On click: fade out the box, speed up stars, trigger star collision, and show the logo with neon glow
-    boxContainer.addEventListener('click', () => {
-      box.classList.add('fade-out');
-      document.querySelectorAll('.star').forEach(star => {
-        star.style.animationDuration = '0.2s';
+    // Create cursor trail effect
+    function createCursorTrail() {
+      const cursorTrailCount = 5;
+      const trails = [];
+      
+      for (let i = 0; i < cursorTrailCount; i++) {
+        const trail = document.createElement('div');
+        trail.classList.add('cursor-trail');
+        document.body.appendChild(trail);
+        trails.push(trail);
+      }
+      
+      document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        setTimeout(() => {
+          trails.forEach((trail, index) => {
+            setTimeout(() => {
+              trail.style.left = `${mouseX}px`;
+              trail.style.top = `${mouseY}px`;
+              trail.style.opacity = 1 - (index * 0.2);
+              trail.style.transform = `scale(${1 - (index * 0.15)})`;
+              
+              setTimeout(() => {
+                trail.style.opacity = "0";
+              }, index * 50);
+            }, index * 40);
+          });
+        }, 5);
       });
-      stars.classList.add('collision');
+    }
+
+    // Sound effects (console logs)
+    function playSound(type) {
+      console.log(`Playing sound: ${type}`);
+    }
+
+    // Warp drive transition
+    document.getElementById("warpButton").addEventListener("click", function(e) {
+      e.preventDefault();
+      
+      playSound('warp');
+      
+      const warpOverlay = document.createElement('div');
+      warpOverlay.style.position = 'fixed';
+      warpOverlay.style.top = '0';
+      warpOverlay.style.left = '0';
+      warpOverlay.style.width = '100%';
+      warpOverlay.style.height = '100%';
+      warpOverlay.style.background = 'linear-gradient(90deg, var(--primary-glow), var(--secondary-glow))';
+      warpOverlay.style.opacity = '0';
+      warpOverlay.style.zIndex = '999';
+      warpOverlay.style.transition = 'opacity 0.5s';
+      
+      document.body.appendChild(warpOverlay);
+      
       setTimeout(() => {
-        stars.classList.remove('collision');
-      }, 500);
-      logo.classList.add('glow');
-      secretText.classList.add('show');
+        warpOverlay.style.opacity = '0.8';
+      }, 10);
+      
+      setTimeout(() => {
+        const form = document.getElementById('applyForm');
+        form.scrollIntoView({ behavior: 'smooth' });
+        form.classList.add('visible');
+        
+        warpOverlay.style.opacity = '0';
+        setTimeout(() => {
+          document.body.removeChild(warpOverlay);
+        }, 500);
+      }, 800);
     });
+
+    // Initialize everything on load
+    window.onload = function() {
+      // claptac #4 - random comment
+      console.log("CLAPTAC");
+      createStars();
+      createCursorTrail();
+      revealText();
+      document.querySelectorAll('.job-item, .apply-btn').forEach(item => {
+        item.addEventListener('mouseenter', () => playSound('hover'));
+      });
+    };
   </script>
 </body>
 </html>
