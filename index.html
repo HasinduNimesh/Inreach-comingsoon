@@ -782,7 +782,7 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P52L2MBD"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-   
+
     <div id="introScreen" class="intro-screen">
       <div class="planet-container">
         <div class="planet">
@@ -1183,13 +1183,22 @@ function createShootingStars() {
     }, duration * 1000);
   }
   
-  // Function to play shooting star sound
-  function playShootingStarSound() {
-    // Resume audio context if suspended
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-    
+// Function to play shooting star sound with Safari compatibility
+function playShootingStarSound() {
+  if (!audioContext) {
+    createAudioContext();
+  }
+  
+  // Exit if audio context couldn't be created
+  if (!audioContext) return;
+  
+  // Resume audio context if suspended
+  if (audioContext.state === 'suspended') {
+    audioContext.resume().catch(err => console.warn("Couldn't resume audio context", err));
+    return; // Don't try to play now
+  }
+  
+  try {
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
     
@@ -1208,7 +1217,10 @@ function createShootingStars() {
     
     oscillator.start();
     oscillator.stop(audioContext.currentTime + 0.6);
+  } catch (e) {
+    console.error("Error playing shooting star sound:", e);
   }
+}
   
   // Create multiple shooting stars simultaneously
   function createStarGroup() {
@@ -1235,8 +1247,10 @@ function createShootingStars() {
   scheduleNextStarGroup(); // Schedule more stars
 }
 
-// Sound system implementation
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+// Replace the audio context initialization and sound functions with this Safari-compatible version
+
+// Sound system implementation with Safari compatibility
+let audioContext = null;
 const soundEffects = {
   glitch: null,
   engine: null,
@@ -1244,91 +1258,161 @@ const soundEffects = {
   hover: null
 };
 
+// Initialize audio context safely
+function createAudioContext() {
+  if (audioContext === null) {
+    try {
+      // The webkit prefix is needed for Safari
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContext();
+      
+      // Safari requires unlocking audio context with a user gesture
+      if (audioContext.state === 'suspended' && 'ontouchstart' in window) {
+        const unlock = function() {
+          audioContext.resume().then(() => {
+            document.body.removeEventListener('touchstart', unlock);
+            document.body.removeEventListener('touchend', unlock);
+            document.body.removeEventListener('click', unlock);
+          });
+        };
+        
+        document.body.addEventListener('touchstart', unlock, false);
+        document.body.addEventListener('touchend', unlock, false);
+        document.body.addEventListener('click', unlock, false);
+      }
+      
+      console.log("Audio context created successfully");
+      return true;
+    } catch(e) {
+      console.error("Web Audio API not supported:", e);
+      return false;
+    }
+  }
+  return true;
+}
+
 // Preload sound effects
 function preloadSounds() {
-  // Simple oscillator-based sound effects
-  
-  function createGlitchSound() {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.type = 'sawtooth';
-    oscillator.frequency.setValueAtTime(200 + Math.random() * 500, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
-    
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.1);
+  if (!createAudioContext()) {
+    return; // Exit if audio context couldn't be created
   }
   
+  // Simple oscillator-based sound effects - for Safari compatibility
+  
+  function createGlitchSound() {
+    if (!audioContext || audioContext.state === 'closed') {
+      createAudioContext();
+    }
+    
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.type = 'sawtooth';
+      oscillator.frequency.setValueAtTime(200 + Math.random() * 500, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (e) {
+      console.error("Error playing glitch sound:", e);
+    }
+  }
+  
+  // Similar updates for other sound effect functions
   function createEngineSound() {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    if (!audioContext || audioContext.state === 'closed') {
+      createAudioContext();
+    }
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 1);
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.2);
-    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 2);
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 1);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.2);
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 2);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 2);
+    } catch (e) {
+      console.error("Error playing engine sound:", e);
+    }
   }
   
   function createWarpSound() {
-    const oscillator1 = audioContext.createOscillator();
-    const oscillator2 = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    if (!audioContext || audioContext.state === 'closed') {
+      createAudioContext();
+    }
     
-    oscillator1.type = 'sine';
-    oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
-    oscillator1.frequency.exponentialRampToValueAtTime(2000, audioContext.currentTime + 0.5);
-    
-    oscillator2.type = 'sawtooth';
-    oscillator2.frequency.setValueAtTime(150, audioContext.currentTime);
-    oscillator2.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.8);
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
-    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
-    
-    oscillator1.connect(gainNode);
-    oscillator2.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator1.start();
-    oscillator2.start();
-    oscillator1.stop(audioContext.currentTime + 0.8);
-    oscillator2.stop(audioContext.currentTime + 0.8);
+    try {
+      const oscillator1 = audioContext.createOscillator();
+      const oscillator2 = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator1.type = 'sine';
+      oscillator1.frequency.setValueAtTime(200, audioContext.currentTime);
+      oscillator1.frequency.exponentialRampToValueAtTime(2000, audioContext.currentTime + 0.5);
+      
+      oscillator2.type = 'sawtooth';
+      oscillator2.frequency.setValueAtTime(150, audioContext.currentTime);
+      oscillator2.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.8);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
+      
+      oscillator1.connect(gainNode);
+      oscillator2.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator1.start();
+      oscillator2.start();
+      oscillator1.stop(audioContext.currentTime + 0.8);
+      oscillator2.stop(audioContext.currentTime + 0.8);
+    } catch (e) {
+      console.error("Error playing warp sound:", e);
+    }
   }
   
   function createHoverSound() {
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
+    if (!audioContext || audioContext.state === 'closed') {
+      createAudioContext();
+    }
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.05);
-    gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.2);
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + 0.2);
+    try {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.05, audioContext.currentTime + 0.05);
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.2);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.2);
+    } catch (e) {
+      console.error("Error playing hover sound:", e);
+    }
   }
   
   soundEffects.glitch = createGlitchSound;
@@ -1337,11 +1421,27 @@ function preloadSounds() {
   soundEffects.hover = createHoverSound;
 }
 
-// Play sound effect
+// Play sound effect with better Safari support
 function playSound(type) {
+  // Create audio context if it doesn't exist
+  if (!audioContext) {
+    if (!createAudioContext()) {
+      return;
+    }
+  }
+  
   // Resume audio context if it's suspended (browser policy)
   if (audioContext.state === 'suspended') {
-    audioContext.resume();
+    audioContext.resume().then(() => {
+      console.log("AudioContext resumed successfully");
+      // Try to play the sound after resuming
+      if (soundEffects[type]) {
+        soundEffects[type]();
+      }
+    }).catch(error => {
+      console.warn("Failed to resume AudioContext:", error);
+    });
+    return;
   }
   
   // Check if sound type exists
@@ -1358,11 +1458,54 @@ function initAudio() {
   // Only initialize once
   if (!window.audioInitialized) {
     window.audioInitialized = true;
-    preloadSounds();
     
-    // Remove the listener after first use
-    document.removeEventListener('click', initAudio);
-    document.removeEventListener('keydown', initAudio);
+    // Create a user gesture-initiated sound to unlock audio on Safari
+    const touchStartHandler = function() {
+      createAudioContext();
+      
+      if (audioContext) {
+        // Play silent buffer to unlock the audio
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+        
+        // Load our actual sounds after unlocking
+        setTimeout(preloadSounds, 100);
+        
+        // Show a visual indicator that sound is now available
+        const soundIndicator = document.createElement('div');
+        soundIndicator.style.position = 'fixed';
+        soundIndicator.style.bottom = '20px';
+        soundIndicator.style.right = '20px';
+        soundIndicator.style.background = 'rgba(0, 0, 0, 0.7)';
+        soundIndicator.style.color = 'var(--primary-glow)';
+        soundIndicator.style.padding = '10px 15px';
+        soundIndicator.style.borderRadius = '8px';
+        soundIndicator.style.fontSize = '0.9em';
+        soundIndicator.style.zIndex = '100';
+        soundIndicator.style.transition = 'opacity 1s';
+        soundIndicator.innerHTML = 'Sound enabled ♪';
+        document.body.appendChild(soundIndicator);
+        
+        setTimeout(() => {
+          soundIndicator.style.opacity = '0';
+          setTimeout(() => {
+            if (document.body.contains(soundIndicator)) {
+              document.body.removeChild(soundIndicator);
+            }
+          }, 1000);
+        }, 3000);
+      }
+      
+      // Remove event listeners
+      document.removeEventListener('touchstart', touchStartHandler);
+      document.removeEventListener('click', touchStartHandler);
+    };
+    
+    document.addEventListener('touchstart', touchStartHandler);
+    document.addEventListener('click', touchStartHandler);
   }
 }
 
@@ -1626,21 +1769,29 @@ window.onload = function() {
     setTimeout(createStar, 1000);
     scheduleNext();
   }
-
-  // Special launch sound effect
-  function playLaunchSound() {
-    if (!window.AudioContext) {
-      return; // Early return if audio API not supported
+ 
+  // Special launch sound effect with Safari compatibility
+function playLaunchSound() {
+  try {
+    if (!audioContext) {
+      createAudioContext();
     }
     
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioContext) {
+      return; // Early return if audio context couldn't be created
+    }
+    
+    // Resume context if needed
+    if (audioContext.state === 'suspended') {
+      audioContext.resume().catch(err => console.warn("Couldn't resume audio context", err));
+    }
     
     // Create a richer, more dramatic launch sound
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const osc3 = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
+    const osc1 = audioContext.createOscillator();
+    const osc2 = audioContext.createOscillator();
+    const osc3 = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const filter = audioContext.createBiquadFilter();
     
     // Configure oscillators
     osc1.type = 'sine';
@@ -1648,42 +1799,45 @@ window.onload = function() {
     osc3.type = 'triangle';
     
     // Start with low frequencies
-    osc1.frequency.setValueAtTime(150, ctx.currentTime);
-    osc2.frequency.setValueAtTime(40, ctx.currentTime);
-    osc3.frequency.setValueAtTime(220, ctx.currentTime);
+    osc1.frequency.setValueAtTime(150, audioContext.currentTime);
+    osc2.frequency.setValueAtTime(40, audioContext.currentTime);
+    osc3.frequency.setValueAtTime(220, audioContext.currentTime);
     
     // Rising pitch effect
-    osc1.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 1.5);
-    osc2.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 1.2);
-    osc3.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 1.0);
+    osc1.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 1.5);
+    osc2.frequency.exponentialRampToValueAtTime(250, audioContext.currentTime + 1.2);
+    osc3.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 1.0);
     
     // Configure filter
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(300, ctx.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(4000, ctx.currentTime + 1.0);
+    filter.frequency.setValueAtTime(300, audioContext.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(4000, audioContext.currentTime + 1.0);
     filter.Q.value = 5;
     
     // Set volume envelope
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.1);
-    gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.5);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0);
+    gain.gain.setValueAtTime(0, audioContext.currentTime);
+    gain.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1);
+    gain.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2.0);
     
     // Connect everything
     osc1.connect(filter);
     osc2.connect(filter);
     osc3.connect(filter);
     filter.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(audioContext.destination);
     
     // Start and stop
     osc1.start();
     osc2.start();
     osc3.start();
-    osc1.stop(ctx.currentTime + 2.0);
-    osc2.stop(ctx.currentTime + 2.0);
-    osc3.stop(ctx.currentTime + 2.0);
+    osc1.stop(audioContext.currentTime + 2.0);
+    osc2.stop(audioContext.currentTime + 2.0);
+    osc3.stop(audioContext.currentTime + 2.0);
+  } catch (e) {
+    console.error("Error playing launch sound:", e);
   }
+}
 };
   </script>
 </body>
